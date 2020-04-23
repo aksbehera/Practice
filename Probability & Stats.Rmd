@@ -1,0 +1,801 @@
+---
+title: "Probability & Statistics Using R : Individual Assignment"
+author: "Akshit Behera | 12010010"
+date: "3/23/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+**Q1. If a random variable has the normal distribution with µ= 77.0 and σ = 3.4, find the probability that random variable is**
+
+**(a) less than 72.6**
+
+**(b) greater than 88.5**
+
+**(c) between 81 and 84**
+
+**(d) between 56 and 92**
+
+
+**Ans 1.** Since the data is normally distributed, the probability that a random variable, X would take a certain value would correspond to area under the normal curve.
+
+We can find this by defining a standard normal variable, z with mean 0 and standard deviation 1. We calculate z as (X-\( \mu \))/\(\sigma\), where X is the value we want to check for, \( \mu \) is the mean and \(\sigma\) is the standard deviation. 
+
+(a) Probability that a random variable X < 72.6
+
+Given that \( \mu \) = 77 and \(\sigma\) = 3.4, z value for case (a) would be
+
+```{r}
+z = (72.6-77)/3.4
+z
+```
+With this value of z, we calculate the area under the curve to the left of this point using the pnorm function
+
+```{r}
+pnorm(z)
+```
+Hence, the probability that X < 72.6 is 0.0978.
+
+(b) X > 88.5
+
+Similary as in the previous case, we will use the same formula to calculate the z value
+```{r}
+z = (88.5-77)/3.4
+z
+```
+Now, to calculate the probability that the random variable has a value greater than 88.5, we will have to calculate the area under the curve to the right of this point. Thus, using the pnorm function
+```{r}
+1 - pnorm(z)
+```
+Hence, the probability that X > 88.5 is 0.0004
+
+(c) 81 < X < 84
+
+We will calculate z using the same formula, however, to calculate the probability that X lies between 81 and 84, we will have to calculate the area to the left of 84 and then subtract from it, the area to the left of 81
+```{r}
+#Calculating probability of X < 81
+z1 = (81-77)/3.4
+pnorm(z1)
+
+#Calculating probability of X < 84
+z2 = (84-77)/3.4
+pnorm(z2)
+
+#Probability that 81 < X < 84
+pnorm(z2) - pnorm(z1)
+```
+Hence, probability that X lies between 81 and 84 is 0.0999
+
+(d) 56 < X < 92
+
+We will calculate z using the same formula, however, to calculate the probability that X lies between 56 and 92, we will have to calculate the area to the left of 92 and then subtract from it, the area to the left of 56
+```{r}
+#Calculating z for X = 56
+z1 = (56-77)/3.4
+pnorm(z1)
+
+#Calculating z for X = 92
+z2 = (92-77)/3.4
+pnorm(z2)
+
+#Probability that 56 < X < 92
+pnorm(z2) - pnorm(z1)
+```
+Hence, probability that X lies between 56 and 92 is 0.9999949
+
+**Q2. In a car race, the finishing times are normally distributed with mean 145 minutes and standard deviation of 12 minutes.**
+
+**(a) Find percentage of car racers whose finish time is between 130 and 160 minutes.**
+
+**(b) Find percentage of car racers whose finish time is less than 130 minutes.**
+
+**Ans 2.** Given that the data is normally distributed with \(\mu\) = 145 and \(\sigma\) = 12, we will define a standard normal variable, z as (X-\( \mu \))/\(\sigma\), where X is the value we want to check for.
+
+(a) Percentage of car racers whose finish time is between 130 and 160 minutes
+
+To calculate the percentage of car racers whose finish time is between 130 and 160 minutes, we will have to calculate the area under the normal curve to the left of 160 and subtract from it, the area under the curve to the left of 130
+```{r}
+#Calculating probability of X < 130
+z1 = (130-145)/12
+pnorm(z1)
+
+#Calculating probability of X < 160
+z2 = (160-145)/12
+pnorm(z2)
+
+#Calculating probabilty of  130 < X < 160
+pnorm(z2) - pnorm(z1)
+```
+Hence, the percentage of cars whose finish time is between 130 and 160 minutes is 78.87%
+
+(b) Percentage of car racers whose finish time is less than 130 minutes
+```{r}
+#Calculating probability of X < 130
+z1 = (130-145)/12
+pnorm(z1)
+```
+Hence, the percentage of cars whose finish time is less than 130 minutes is 10.56%
+
+**Q3. A test-•‐taker has recently taken an aptitude test with 15 questions. All of the questions are True-•‐False type in nature.**
+
+**(a) What is the probability that the student got first five questions correct.**
+
+**(b) What is the probability that the student got five questions correct.**
+
+**Ans 3.** Since there are only two possible answers to all questions i.e., TRUE or FALSE, an answer can be either fully correct or fully wrong. The probability of an answer being correct, P(C) is 0.5, and similarly the probability of an answer being wrong, P(W) is also 0.5.
+
+P(C) = 0.5
+
+P(W) = 0.5
+
+n = 15
+
+(a) Probability that the student got first five questions correct
+
+Out of the 15 questions, the first 5 are correct, C, and the remaining 10 are wrong, W. This scenario can be demonstrated as follows:
+
+C x C x C x C x C x W x W x W x W x W x W x W x W x W x W
+
+i.e., P(C)^5  * P(W)^10
+```{r}
+(0.5)^5  * (0.5)^10
+```
+
+(b) What is the probability that the student got five questions correct
+
+Now since out of 15, any of the 5 questions can be correct, all possible combinations of correct and wrong answers will have to be taken into consideration while calculating the probability. This describes a binomial distribution and to arrive at the probability, we will have to calculate the probability of a single scenario where five questions are correct and multiply it with the total number of such scenarios.
+
+We can do this in two ways, we can either use the _classic formula_ or the _dbinom function_ to arrive at our answer.
+
+* **By using formula**
+
+We have already calculated above the probability of a single scenario where five questions are correct. We need to multiply it with the total number of such combinations by using the choose function.
+
+```{r}
+choose(15,5)*((0.5)^5  * (0.5)^10)
+```
+
+* **By using dbinom function**
+
+We use the dbinom function to calculate the probability of a binomial distribution
+
+```{r}
+dbinom(5,15,0.5)
+```
+Hence, the probability that the student got five questions correct is 0.0916
+
+**Q4. 68% of the marks in exam are between 35 and 42. Assuming data is normally distributed, what are the mean and standard deviation?**
+
+**Ans 4.** Given that the data is normally distributed, we can make use of property that 68% of the data will lie within 1 standard deviation on either side of the mean. Since, in the given question, 68% of the marks in the exam are between 35 and 42, we can assume that 35 and 42 are situated 1 standard deviation away on either side of the mean. Hence, we can say,
+
+<center>
+
+### _\(\mu\) + \(\sigma\) = 42_
+
+and,
+
+### _\(\mu\) - \(\sigma\) = 35_
+
+</center>
+
+Solving for both equations, we get the values of \(\mu\) and \(\sigma\) as 38.5 and 3.5 respectively
+
+Thus, **mean = 38.5** and **standard devation = 3.5**
+
+**Q5. A professor asked students to take two exams. 30% of the class cleared both exams and 55% of the class cleared the first exam. What percentage of class who cleared first exam also cleared the second exam?**
+
+**Ans 5.** This is a case of conditional probability, where we need to find the percentage of class who cleared the second exam, given that they had also cleared the first exam.
+
+Let us define the first exam as A, hence percentage of class which passed exam A would be defined as,
+
+P(A) = 0.55
+
+The percentage of class passing both exams A and B can be defined as,
+
+P($A \cap B$) = 0.3
+
+We need to find out the percentage of class who cleared second exam given that they cleared the first exam as well. This can be defined as P(B|A)
+
+The conditional probability of B, given A, [P(B|A)] can be calculated as the probability of both A and B, divided by the probability of A, i.e., $\frac{P(A \cap B)} {P(A)}$
+
+```{r}
+Prob_B_Given_A = 0.3/0.55
+Prob_B_Given_A
+```
+Therefore, the percentage of class who cleared first exam also cleared the second exam is 54.54%
+
+**Q6. In India, 82% of all urban homes have a TV. 62% have a TV and DVD player. What is probability that a home has a DVD player given that the home has a TV.**
+
+**Ans 6.** Probability that a home has TV,
+
+P(T) = 0.82
+
+Probability that a home has a TV and DVD both,
+
+P($T \cap D$) = 0.62
+
+We have to calculate the probability of a home having a DVD player given that the home has a TV, i.e., P(D|T), which we can get by using the conditional probability formula, $\frac{P(T \cap D)} {P(T)}$
+
+```{r}
+Prob_D_Given_T = 0.62/0.82
+Prob_D_Given_T
+```
+Therefore, the probability that a home has a DVD player given that the home has a TV 75.6%
+
+**Q7. You toss a coin three times. Assume that the coin is fair. What is the probability of getting:**
+
+**(a) All three heads**
+
+**(b) Exactly one head**
+
+**(c) Given that you have seen exactly one head, what is the probability of getting at-•‐least two heads?**
+
+**Ans 7.** The sample space of tossing a fair coin three times would be as follows
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+library(prob)
+tosscoin(3)
+```
+
+(a) Probability of getting all three heads
+
+Since there is just one case out of 8 where heads show up on all 3 coin tosses,
+
+```{r}
+Prob_three_heads = 1/8
+Prob_three_heads
+```
+
+(b) Exactly one head
+
+There are 3 scenarios where exactly one head shows up
+
+```{r}
+Prob_one_head = 3/8
+Prob_one_head
+```
+
+(c) Given that you have seen exactly one head, what is the probability of getting at-•‐least two heads
+
+Given that one head is already observed in the coin tosses, that would leave us with only 7 scenarios (excluding T-T-T). Out of the remaining 7 scenarios, there are 4 cases where atleast two heads show up
+
+```{r}
+Prob_twohead_given_onehead = 4/7
+Prob_twohead_given_onehead
+```
+
+**Q8. Let x be the random variable that represents the speed of cars. x has μ = 90 and σ = 10. We have to find the probability that x is higher than 100 or P(x > 100)**
+
+**Ans 8.** Assuming that the data is distributed normally with \(\mu\) = 90 and \(\sigma\) = 10, in order to find the probability that the random variable, x, is higher than 100, we will have to find the standard normal variable, z, for the given scenario, using which we will calcuate the probability of x being higher than 100
+
+```{r}
+#Calculating the standard normal variable, z
+z = (100-90)/10
+
+#Calculating area under the normal curve to the right of 100
+1 - pnorm(z)
+```
+
+**Q9. The blue M&M was introduced in 1995. Before then, the color mix in a bag of plain M&Ms was (30% Brown, 20% Yellow, 20% Red, 10% Green, 10% Orange, 10% Tan). Afterward it was (24% Blue, 20% Green, 16% Orange, 14% Yellow, 13% Red, 13% Brown). A friend of mine has two bags of M&Ms, and he tells me that one is from 1994 and one from 1996. He won’t tell me which is which, but he gives me one M&M from each bag. One is yellow and one is green. What is the probability that the yellow M&M came from the 1994 bag?**
+
+**Ans 9.** The M&M bags are from two years, 1994 and 1996, hence, the probability that one M&M taken, came from either of the bags would be 0.5, i.e.,
+
+P(M&M came from 1994 Bag) = 0.5
+
+P(M&M came from 1996 Bag) = 0.5
+
+Now from within both the bags, probabilities of different colours of M&Ms being taken are as follows:
+
+**1994 Bag**
+
+* P(Brown | 1994 Bag) = 0.3
+
+* P(Yellow | 1994 Bag) = 0.2
+
+* P(Red | 1994 Bag) = 0.2
+
+* P(Green | 1994 Bag) = 0.1
+
+* P(Orange | 1994 Bag) = 0.1
+
+* P(Tan | 1994 Bag) = 0.1
+
+**1996 Bag**
+
+* P(Blue | 1996 Bag) = 0.24
+
+* P(Green | 1996 Bag) = 0.20
+
+* P(Orange | 1996 Bag) = 0.16
+
+* P(Yellow | 1996 Bag) = 0.14
+
+* P(Red | 1996 Bag) = 0.13
+
+* P(Brown | 1996 Bag) = 0.13
+
+As per the question, we need to calculate that out of the two M&Ms given, i.e., green and yellow, what is the probability that the yellow M&M came from the 1994 bag.
+
+This can be rephrased to say, what is the probability that the M&M came from the 1994 bag, given that it was yellow, i.e., P(M&M came from 1994 Bag | Yellow)
+
+To calculate this we will use the formula for conditional probability
+
+<center>
+
+**P(M&M came from 1994 Bag | Yellow) = (P(Yellow|1994 Bag) x P(M&M came from 1994 Bag))/(P(Yellow|1994 Bag) x P(M&M came from 1994 Bag) + P(Yellow|1996 Bag) x P(M&M came from 1996 Bag))**
+
+</center>
+
+```{r}
+Prob_1994_Bag_Given_Yellow = (0.2 * 0.5)/((0.2 * 0.5)+(0.14 * 0.5))
+Prob_1994_Bag_Given_Yellow
+```
+Hence, the probability that the yellow M&M came from the 1994 bag is 58.82%
+
+**Q 10. Find the daily stock price of Wal-•‐ Mart for the last three months. (A good source for the data is http://moneycentral.msn.com or Yahoo Finance or Google Finance (there are many more such sources). You can ask for the three-•‐month chart and export the data to a spreadsheet.)**
+
+**(a) Calculate the mean and the standard deviation of the stock prices**
+
+**(b) Get the corresponding data for Kmart and calculate the mean and the standard deviation**
+
+**(c) The coefficient of variation (CV)is defined as the ratio of the standard deviation over the mean. Calculate the CV of Wal-•‐Mart and Kmart stock prices**
+
+**(d) If the CV of the daily stock prices is taken as an indicator of risk of the stock, how do Wal-•‐Mart and Kmart stocks compare in terms of risk? (There are better measures of risk, but we will use CV in this exercise)**
+
+**(e) Get the corresponding data of the Dow Jones Industrial Average (DJIA) and compute its CV. How do Wal-•‐ Mart and Kmart stocks compare with the DJIA in terms of risk?**
+
+**(f) Suppose you bought 100 shares of Wal-•‐Mart stock three months ago and held it. What are the mean and the standard deviation of the daily market price of your holding for the three months?**
+
+**Ans 10.** Importing the last three month's dataset for Walmart from the working directory
+
+```{r}
+#Setting the working directory
+setwd("C:\\Users\\mmt8091\\Desktop\\ISB\\Assignment")
+
+#Importing Walmart Data
+Walmart = read.csv("C:\\Users\\mmt8091\\Desktop\\ISB\\Assignment\\WMT.csv")
+head(Walmart)
+
+#Importing K-Mart(Sears) Data
+Sears = read.csv("C:\\Users\\mmt8091\\Desktop\\ISB\\Assignment\\SHLDQ.csv")
+head(Sears)
+```
+
+(a) Calculate the mean and the standard deviation of Walmart the stock prices. 
+
+```{r}
+#To calculate mean, we use the mean function
+Walmart_Mean = mean(Walmart$Adj.Close, na.rm = TRUE)
+Walmart_Mean
+
+#To calculate standard deviation, we use the stdev function
+Walmart_StDev = stdev(Walmart$Adj.Close)
+Walmart_StDev
+```
+
+(b) Get the corresponding data for Kmart and calculate the mean and the standard deviation
+
+```{r}
+#To calculate mean, we use the mean function
+Sears_Mean = mean(Sears$Adj.Close, na.rm = TRUE)
+Sears_Mean
+
+#To calculate standard deviation, we use the stdev function
+Sears_StDev = stdev(Sears$Adj.Close)
+Sears_StDev
+```
+
+(c) Calculate the CV of Wal-•‐Mart and Kmart stock prices
+
+```{r}
+Walmart_CV = Walmart_StDev/Walmart_Mean
+Walmart_CV
+
+Sears_CV = Sears_StDev/Sears_Mean
+Sears_CV
+```
+
+(d) If the CV of the daily stock prices is taken as an indicator of risk of the stock, how do Wal-•‐Mart and Kmart stocks compare in terms of risk?
+
+Since _**a lower CV indicates lower risk**_, Walmart with a CV of **0.0298** would be a better pick than Sears, which has a CV of **0.26**, if one's objective is to minimize risk.
+
+(e) Get the corresponding data of the Dow Jones Industrial Average (DJIA) and compute its CV. How do Wal-•‐ Mart and Kmart stocks compare with the DJIA in terms of risk?
+
+```{r}
+#Importing Dow Jones Industrial Average Data
+Dow_Jones = read.csv("C:\\Users\\mmt8091\\Desktop\\ISB\\Assignment\\DJI.csv")
+head(Dow_Jones)
+
+Dow_Jones_Mean = mean(Dow_Jones$Adj.Close, na.rm = TRUE)
+Dow_Jones_Mean
+
+Dow_Jones_StDev = stdev(Dow_Jones$Adj.Close)
+Dow_Jones_StDev
+
+Dow_Jones_CV = Dow_Jones_StDev/Dow_Jones_Mean
+Dow_Jones_CV
+```
+
+Comparing the CVs, we can conclude that the _**Walmart stock is less risky as compared to DJIA**_, given a lower CV (0.0298 vs. 0.134), whereas, the _**Sears stock is riskier**_ given a higher CV (0.261 vs. 0.134)
+
+(f) Suppose you bought 100 shares of Wal-•‐Mart stock three months ago and held it. What are the mean and the standard deviation of the daily market price of your holding for the three months?
+
+To calculate the value of our total holding at the end of each day during the period, we add a new column, Holding_Vaue, in which we multiply the total number of our shares with the closing value for each day
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+library(dplyr)
+Walmart = Walmart %>% mutate(Holding_Value = Adj.Close*100)
+head(Walmart)
+```
+
+The mean and the standard deviation of the daily market price of the holding for the three months are as follows
+
+```{r}
+#Mean of daily market price of the holding
+
+Holding_Mean = mean(Walmart$Holding_Value)
+Holding_Mean
+
+#Standard Deviation of daily market price of the holding
+
+Holding_StDev = stdev(Walmart$Holding_Value)
+Holding_StDev
+```
+
+**Q 11. For this problem, consider the dataset Prob_Assignment_Dataset.xlsx attached. As the vigilant monitors of the Zappos.Com website, we are obsessed with who is coming to our website and what they do during their visit. This challenge requires you to look at data similar to that which Analytics teams at Zappos would use to assess the overall performance of the business.**
+
+**The data set is a fictional representation of actual data sets that we work with. Perform unii variate descriptive analysis on the variables, and Submit a short description explaining any insights or trends you discovered. Include graphs, data tables, and other helpful visuals to communicate your discoveries. You do not have to work on all of the variables (select any 3-•‐ 4 that are of most interest to you).**
+
+**Ans 11.** We will firstly load the dataset and get a glimpse of what the dataset contains
+```{r}
+library(readxl)
+data = read_excel("Prob_Assignment_Dataset.xlsx")
+head(data)
+str(data)
+```
+
+As we can see, the structure function gives us the info that there are 12 variables and 21061 observations in the dataset. There are 9 numerical variables, 2 character variables and 1 date variable.
+
+The four variables selected for analysis are
+
+- Platform
+
+- Visits
+
+- Site
+
+- Orders
+
+
+**Variable 1 - Platform**
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+#Class of variable
+class(data$platform)
+
+#Number of unique items
+length(unique(data$platform))
+
+#Checking for missing Values
+sum(is.na(data$platform))
+```
+
+The variable is a character with 15 unique items and 410 missing values across the dataset
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+#Frequency Table & Share of each platform
+Platform = data.frame(sort(table(data$platform), decreasing = TRUE))
+Platform = Platform %>% mutate(Share = (Freq/sum(Platform$Freq))*100)
+Platform$Share = round(Platform$Share,2)
+colnames(Platform)[1] = "Platform"
+Platform
+
+#Bar-plot
+library(ggplot2)
+ggplot(data, aes(platform)) + geom_bar()+theme_minimal()+theme(axis.text.x  = element_text(angle=45, hjust =1))
+```
+
+**$\underline{Inferences}$**
+
+- _Majority of the traffic (16.63%) comes in through iOS platform_
+
+- _Android (15.35%) and Windows (11.62%) account for second and thirdmost traffic on the websites_
+
+- _SymbianOS is the least popular (0.36%) platform through which traffic is coming in_
+
+- _There are 410 instances of missing values_
+
+
+**Variable 2 - Visits**
+
+```{r}
+#Data type
+class(data$visits)
+
+#No of entries
+length(data$visits)
+
+#Missing Values
+sum(is.na(data$visits))
+```
+
+The variable is a numeric with 21061 entries and no missing values. Now we try to explore all the key indicators of the variable
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+library(pander)
+data %>% summarise(Variable = "Visits",Visits_Min = min(data$visits),Visits_Mean = mean(data$visits), Visits_Median = median(data$visits),Visits_Standard_Deviation = stdev(data$visits), Visits_Variance = var(data$visits), CV = Visits_Standard_Deviation/Visits_Mean, IQR = IQR(data$visits), Max = max(data$visits)) %>% pander
+
+#Quantiles
+
+data %>% summarise(Variable = "Visits",Q_25 = quantile(visits,0.25), Q_50 = quantile(visits,0.5),Q_75 = quantile(visits,0.75)) %>% pander
+
+```
+
+- A CV with value >1, shows the high degree of variability within the data, and a value of 3.85 signifies very high variability
+
+- 75% of the values are <360, however, the mean is still 1935 with a max value of 136057, again confirming the high degree of variability in the data
+
+Plotting the historgram
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+hist(data$visits, xlab = "Visits", main = "Histogram of Visits", col = "black", border = "White")
+```
+
+
+Calculating skewness and kurtosis
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+library(moments)
+
+#Calculating Skewness
+skewness(data$visits)
+
+#Calculating Kurtosis
+kurtosis(data$visits)
+```
+
+**$\underline{Inferences}$**
+
+- There is a high degree of variability in the data as observed in the indicators above
+
+- As can be inferred from the histogram and also from the calculation above, a positive value of skewness signifies that the data is skewed to the right and a value of +6.5, shows a very high degree of skewness (as can also be seen in the histogram plot above)
+
+- Given that the kurtosis value is >3 (54.67), and also by observing the plot, we can infer that the distribution is Leptokurtic, having a very high peak and longer tail
+
+**Variable 3 - Site**
+
+```{r}
+#Class of variable
+class(data$site)
+
+#Number of unique items
+length(unique(data$site))
+
+#Checking for missing Values
+sum(is.na(data$site))
+```
+
+The variable is a character with 6 unique items and no missing values
+ 
+```{r}
+#Frequency Table & Share of each site
+Site = data.frame(sort(table(data$site), decreasing = TRUE))
+Site = Site %>% mutate(Share = (Freq/sum(Site$Freq))*100)
+Site$Share = round(Site$Share,2)
+colnames(Site)[1] = "Site"
+Site
+
+#Bar-plot
+library(ggplot2)
+ggplot(data, aes(site)) + geom_bar()
+```
+
+**$\underline{Inferences}$**
+
+- _Acme is the most popular site with 35.10% of the traffic share_
+
+- _Pinnacle (27.18%) and Sortly (26.27%) are the second and thirdmost popular sites in terms of traffic volumes_
+
+- _Botly, Tabular and Widgetry, all three have an equal traffic share of 3.82%_
+
+**Variable 4 - Orders**
+
+```{r}
+#Data type
+class(data$orders)
+
+#No of entries
+length(data$orders)
+
+#Missing Values
+sum(is.na(data$orders))
+```
+
+The variable is a numeric with 21061 entries and no missing values. Now we try to explore all the key indicators of the variable
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+data %>% summarise(Variable = "Orders",Orders_Min = min(data$orders),Orders_Mean = mean(data$orders), Orders_Median = median(data$orders),Orders_Standard_Deviation = stdev(data$orders), Orders_Variance = var(data$orders), CV = Orders_Standard_Deviation/Orders_Mean, IQR = IQR(data$orders), Max = max(data$orders)) %>% pander
+
+#Quantiles
+
+data %>% summarise(Variable = "Orders",Q_25 = quantile(orders,0.25), Q_50 = quantile(orders,0.5),Q_75 = quantile(orders,0.75)) %>% pander
+
+```
+
+- A CV with value >1, shows the high degree of variability within the data.
+
+- 75% of the values are <7, however, the mean is still 62.38 with a max value of 4916, again confirming the high degree of variability in the data
+
+Plotting the historgram
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+hist(data$orders, xlab = "Orders", main = "Histogram of Orders", col = "black", border = "White")
+```
+
+Calculating skewness and kurtosis
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+#Calculating Skewness
+skewness(data$orders)
+
+#Calculating Kurtosis
+kurtosis(data$orders)
+```
+
+**$\underline{Inferences}$**
+
+- There is a high degree of variability in the data as observed in the indicators above
+
+- As can be inferred from the histogram and also from the calculation above, a positive value of skewness signifies that the data is skewed to the right and a value of +6.46, shows a very high degree of skewness (as can also be seen in the histogram plot above)
+
+- Given that the kurtosis value is >3 (55.38), and also by observing the plot, we can infer that the distribution is Leptokurtic, having a very high peak and longer tail
+
+**Q 12. Consider the same dataset as earlier. Now perform bi-•‐variate data analysis as discussed in last class to find out relationships between different variables. Write a short description on what you find in the analyses along with any tables, graphs. You do not have to analyze all variables, any 3-•‐4 that interest you most should be the focus here.**
+
+**Ans 12.** Adding three new variables to our data
+
+```{r}
+data = data %>% mutate(Conversion_Rate = round(orders/visits,2)*100, Bounce_Rate = round(bounces/visits,2)*100, Add_To_Cart_Rate = round(add_to_cart/visits,2)*100)
+
+#Extracting months from our dates
+data = data %>% mutate(Month_Num = format(as.Date(data$day, format = "%d-%m-%Y"), "%m"))
+data = data %>% mutate(Month = case_when(Month_Num=="01" ~ "January", Month_Num=="02" ~ "February", Month_Num=="03" ~ "March", Month_Num=="04" ~ "April",Month_Num=="05" ~ "May",Month_Num=="06" ~ "June",Month_Num=="07" ~ "July",Month_Num=="08" ~ "August",Month_Num=="09" ~ "September",Month_Num=="10" ~ "October",Month_Num=="11" ~ "November", Month_Num=="12" ~ "December"))
+head(data)
+```
+
+We will explore bivariate analysis in the dataset by trying to answer certain questions regarding our website traffic
+
+        Q1. Do more visits lead to higher sales?
+
+For this we will firstly take the cumulative visits and sales on all dates to check for patterns.
+
+```{r}
+Cumulative_Visit_Sales = data %>% group_by(day) %>% summarise(Visit = sum(visits, na.rm = TRUE), Sales = sum(gross_sales, na.rm = TRUE))
+Cumulative_Visit_Sales
+```
+
+Let's plot a graph to check the general relationship between the two variables
+
+```{r}
+plot(Cumulative_Visit_Sales$Visit,Cumulative_Visit_Sales$Sales, xlab="Visits", ylab="Sales", main="Sales vs. Visits")
+```
+
+We can see a positive linear relationship between both the variables from the plot. 
+
+Now that a positive linear relationship has been established, we check for the strenght of relationship between the two variables by using the correlation function
+
+```{r}
+cor.test(Cumulative_Visit_Sales$Visit,Cumulative_Visit_Sales$Sales)
+```
+
+A correlation of 0.909 signifies a strong positive correlation between the two variables. Thus, we can conclude that more visits to the website do indeed lead to higher sales.
+
+        Q2. Does the site with the highest number of visits also has the highest conversion rate?
+
+To calculate this, firstly we will summarize the required data into a table called Site_Visit_Sales
+
+```{r}
+Site_Visit_Sales = data %>% group_by(site) %>% summarise(Visit = sum(visits), Order = sum(orders, na.rm = TRUE))
+
+#Calculating the corresponding conversion rates
+Site_Visit_Sales = Site_Visit_Sales %>% mutate(Conversion = round((Order/Visit)*100,2))
+Site_Visit_Sales
+
+#Site with the most number of visits
+Site_Visit_Sales$site[which.max(Site_Visit_Sales$Visit)]
+
+#Site with the highest conversion rate
+Site_Visit_Sales$site[which.max(Site_Visit_Sales$Conversion)]
+```
+
+We see that though the site with the maximum visits is Acme, the highest conversion is that of Tabular, hence, we can conclude that the website with the highest number of visits does not possess the highest conversion rate
+
+        Q3. which device platform has the highest add to cart rate?
+
+Again we will firstly summarize the required data into a table called Platform_Visit_Cart
+
+```{r}
+Platform_Visit_Cart = data %>% group_by(platform) %>% summarise(Visit = sum(visits), Added_to_Cart = sum(add_to_cart, na.rm = TRUE))
+
+#Calculating the corresponding add to cart rates
+Platform_Visit_Cart = Platform_Visit_Cart %>% mutate(Add_To_Cart_Rate = round((Added_to_Cart/Visit)*100,2))
+Platform_Visit_Cart
+
+#Platform with the most number of visits
+Platform_Visit_Cart$platform[which.max(Platform_Visit_Cart$Visit)]
+
+#Platform with the highest Add to Cart Rate
+Platform_Visit_Cart$platform[which.max(Platform_Visit_Cart$Add_To_Cart_Rate)]
+```
+As we had observed earlier there were 410 missing values in the platform variable, add to cart rate is showing up to be the highest for entries with the missing platform value. Discounting for the same,  we will find the platform with the next highest add to cart rate
+
+To do this we will use the order function to identify the index of the add to cart rates in descending order.
+
+```{r}
+order(Platform_Visit_Cart$Add_To_Cart_Rate, decreasing = TRUE)
+```
+
+The index 15 shows up first, followed by index 9, signifying the platform with the highest cadd to cart rates. We can cross verify that index 15 corresponds to NA
+
+```{r}
+Platform_Visit_Cart$platform[15]
+```
+Now that we have cross verified, to find the platform with the next highest add to cart rate, we need to identfy the platform with the index 9
+
+```{r}
+Platform_Visit_Cart$platform[9]
+```
+
+Thus, the platform with the highest add to cart rate is MacOSX.
+
+        Q4. On an average, how many new customers are visiting in a month. How many months saw new customer visits being higher than average?
+
+Summarizing monthwise new customer data in a table called New_Customers
+
+```{r}
+New_Customers = data %>% group_by(Month,Month_Num,new_customer) %>% summarise(New_Customer_Count = n())
+New_Customers = New_Customers %>% filter(new_customer==1)
+New_Customers = New_Customers[order(New_Customers$Month_Num),]
+head(New_Customers)
+
+#Average of new customers visiting in a month
+mean(New_Customers$New_Customer_Count)
+```
+
+In order to find the months where new customer flow was higher than average, let's plot the data
+
+```{r}
+level_order = c("January","February","March","April","May","June","July","August","September","October","November","December")
+ggplot(New_Customers, aes(x=factor(Month,level=level_order), y=New_Customer_Count))+geom_bar(stat = "identity")+labs(x="Month", y="No of New Customers")+geom_text(aes(label=round(New_Customer_Count,0)), vjust=1.6, color="white", position = position_dodge(0.9),size=3.5)+scale_fill_brewer(palette="Paired")+ggtitle("Month-wise New Customer Visits") + theme_minimal()+geom_hline(yintercept=637, linetype="dashed", color="red", size=1)
+
+#Months where new customer flow was higher than average
+New_Customers$Month[New_Customers$New_Customer_Count>mean(New_Customers$New_Customer_Count)]
+```
+
+        Q5. Via which platform do most new customers visit the website? Also, compare the average sales, orders and bounce rates of new and old customers.
+        
+Summarizing platform-wise new customer data in a table called New_Customers_Platform
+
+```{r}
+New_Customers_Platform = data %>% group_by(platform,new_customer) %>% summarise(New_Customer_Count = n())
+New_Customers_Platform = New_Customers_Platform %>% filter(new_customer==1)
+head(New_Customers_Platform)
+```
+
+Plotting the data in a bar graph
+
+```{r}
+ggplot(New_Customers_Platform, aes(x=platform, y=New_Customer_Count))+geom_bar(stat = "identity")+labs(x="Platform", y="No of New Customers")+geom_text(aes(label=round(New_Customer_Count,0)), vjust=1.6, color="white", position = position_dodge(0.9),size=3.5)+scale_fill_brewer(palette="Paired")+ggtitle("Platform-wise New Customer Visits") + theme_minimal()+theme(axis.text.x  = element_text(angle=45, hjust =1))
+
+#Platform with most new customer visits
+New_Customers_Platform$platform[which.max(New_Customers_Platform$New_Customer_Count)]
+```
+
+In order to compare the sales, order and bounce rates of old and new customers, we will again summarize the data in a new table called New_Old_Customer_Comparison
+
+```{r}
+New_Old_Customer_Comparison = data %>% group_by(new_customer) %>% summarise(Avg_Sale = mean(gross_sales, na.rm = TRUE), Avg_Orders = mean(orders, na.rm = TRUE), Bounce_Rate = (sum(bounces)/sum(visits)*100))
+New_Old_Customer_Comparison
+```
+
+We can infer from the above table that, though the bounce rate for new customers is lower (15.7% vs 22.4%), the average sale value and orders are significantly higher, by ~5x and 3x respectively for returning/old customers
