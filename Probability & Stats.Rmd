@@ -1,6 +1,6 @@
 ---
-title: "Probability & Statistics Using R : Individual Assignment"
-author: "Akshit Behera | 12010010"
+title: "Probability & Statistics Using R"
+author: "Akshit Behera"
 date: "3/23/2020"
 output:
   pdf_document: default
