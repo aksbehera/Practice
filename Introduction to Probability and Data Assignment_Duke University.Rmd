@@ -1,0 +1,164 @@
+---
+title: "Exploring the BRFSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+### Load data
+
+Make sure your data and R Markdown files are in the same directory. When loaded
+your data file will be called `brfss2013`. Delete this note when before you submit 
+your work. 
+
+```{r}
+setwd("C:\\Users\\mmt8091\\Desktop\\ISB\\Data")
+load("C:/Users/mmt8091/Desktop/ISB/Data/4tiY2fqCQa-YmNn6gnGvzQ_1e7320c30a6f4b27894a54e2de50a805_brfss2013.Rdata")
+```
+
+* * *
+
+## Part 1: Data
+
+The Behavioral Risk Factor Surveillance System (BRFSS) is a system of phone-surveys that collect data from U.S. residents on their health-related risk behaviors, chronic health conditions, and use of preventive services. Data is collected from all 50 states as well as the District of Columbia, Guam, Puerto Rico, and the U.S. Virgin Islands. BRFSS is the largest continuously conducted health survey system in the world.
+
+We can learn about the sampling methods from the [BRFSS Data User Guide] (http://www.cdc.gov/brfss/data_documentation/pdf/userguidejune2013.pdf). In order to conduct the BRFSS, states obtain samples of telephone numbers from CDC. The BRFSS uses two samples: one for landline telephone respondents and one for cellular telephone respondents. Since landline telephones are often shared among persons living within a residence, household sampling is used in the landline sample. Household sampling requires interviewers to collect information on the number of adults living within a residence and then select randomly from all eligible adults. Cellular telephone respondents are weighted as single adult households. 
+
+For the landline sample, disproportionate stratified sampling (DSS) is used for sampling telephone numbers and is more efficient than simple random sampling. The cellular telephone sample is randomly generated from a sampling frame of confirmed cellular area code and prefix combinations.
+
+### Generalizability
+
+As it stands, the BRFSS should generalize to all adults (18-years and older) who are household members since the phone numbers are selected by some form of random sampling. The user guide notes that other nations are setting up similar surveys. However, we should not try to generalize to the global adult population for a variety of reasons. In particular, the access to landlines and cellular telephones is not similar from country to country.
+
+### Causality
+
+The BRFSS data is observational not experimental. Even though the phone numbers are randomly selected, the subjects are *not* randomly assigned to experimental study groups. Therefore, we can only show a correlation/association, not a causatiion
+
+* * *
+
+## Part 2: Research questions
+
+**Research quesion 1:** _Is there a correlation between smoking and being diagnosed with any form of cancer? How does this vary by gender?_
+
+**Research quesion 2:** _How does diabetes vary across gender? Is there  difference in pregnancy rates between females having diabetes and females who do not have diabetes?_
+
+**Research quesion 3:** _Is there a relation between hours of sleep and poor physical or mental health? How does this vary across genders?_
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
+button (green button with orange arrow) above. Make sure that your code is visible
+in the project you submit. Delete this note when before you submit your work.
+
+**Research quesion 1:**
+
+We want to explore the relationship between smoking and a person having cancer and then further explore this relationship across genders. For this, we firstly summarise all the required variables, gender(sex), smoker(smoke100) and cancer (chcocncr and chcscncr) in a table called _**Smoking**_
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+Smoking = brfss2013 %>% select(sex,smoke100,chcocncr,chcscncr)
+summary(Smoking)
+
+#Combining both forms of cancer into one since we are not concerned with which form of cancer does a person develop
+Smoking = Smoking %>% mutate(Cancer = case_when(chcocncr=="Yes" | chcscncr=="Yes" ~ "Yes", TRUE ~ "No"))
+
+#Identify cases where person the person having cancer, smokes or not
+Smoking = Smoking %>% mutate(Smoking_Cancer = case_when(smoke100=="Yes" & Cancer=="Yes" ~ "Smokes & Has Cancer", smoke100=="No" & Cancer=="Yes" ~ "Does Not Smokes & Has Cancer"))
+
+#Aggregating the data to find relation between smoking and cancer
+Smoke_Cancer_Relation = Smoking %>% group_by(smoke100,Cancer) %>% summarise(Count = n()) %>% filter(!is.na(smoke100))
+aggregate(Count~smoke100,Smoke_Cancer_Relation,sum)
+Smoke_Cancer_Relation = Smoke_Cancer_Relation %>% mutate(Relation_Ratio = case_when(smoke100=="Yes" ~ Count/215201, TRUE~Count/261654))
+
+#Plotting the data
+ggplot(Smoke_Cancer_Relation, aes(fill = Cancer, y=Relation_Ratio, x=smoke100))+geom_bar(stat="identity")+geom_text(aes(label=round(Relation_Ratio,2)))+labs(x="Smokes",y="Has Cancer")+ggtitle("Relationship Between Smoking and Cancer")+theme_minimal()
+```
+
+Thus, we see that people who smoke, have a higher chance of having cancer, i.e., in 19% of the cases as compared to 15% when a person does not smoke
+
+In order to see the variation by gender we summarise the data with the gender variable
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+Smoking = Smoking %>% group_by(sex,smoke100,Cancer) %>% summarise(Count = n()) %>% filter(!is.na(sex)) %>% filter(!is.na(smoke100)) %>% filter(Cancer=="Yes")
+
+#Total number of males and females in the given scenario
+aggregate(Count~sex,Smoking,sum)
+
+#Finding the proportions
+Smoking = Smoking %>% mutate(Cancer_Ratio = case_when(sex=="Male" ~ Count/30765, TRUE ~ Count/49762))
+
+#Plotting the data
+ggplot(Smoking, aes(fill = smoke100, y=Cancer_Ratio, x=sex))+geom_bar(stat="identity")+labs(y="Has Cancer")+ggtitle("Gender-wise Relationship Between Smoking and Cancer")+theme_minimal()
+```
+
+Thus, we can see that females who don't smoke have a higher possibility of having some form of cancer as compared to males, whereas, males who smoke have a higher probability of having some form of cancer as compared to females.
+
+
+**Research quesion 2:**
+
+We want to explore the prevalence of diabetes across genders. Also, we want to study if having diabetes has any effect on pregnancy rates among women. To do this, we first aggregate all required variables, gender(sex), diabetic(diabete3) and pregnancy(pregnant) in a table called _**Diabetes**_
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+Diabetes = brfss2013 %>% select(sex,pregnant,diabete3)
+
+#Aggregating diabetes info
+Diabetes = Diabetes %>% mutate(Diabetic = case_when(diabete3=="Yes" | diabete3=="Yes, but female told only during pregnancy" ~ "Yes", TRUE ~ "No"))
+
+#Aggregating diabetes data across genders
+Diabetes_Gender = Diabetes %>% group_by(sex,Diabetic) %>% summarise(Count = n()) %>% filter(!is.na(sex))
+aggregate(Count~sex,Diabetes_Gender,sum)
+Diabetes_Gender = Diabetes_Gender %>% mutate(Diabetic_Ratio = case_when(sex=="Male" ~ Count/201313, TRUE ~ Count/290455))
+Diabetes_Gender
+
+#Plotting the data
+ggplot(Diabetes_Gender, aes(fill = Diabetic, y=Diabetic_Ratio, x=sex))+geom_bar(stat="identity")+geom_text(aes(label=round(Diabetic_Ratio,2)))
+```
+
+We see that females are slightly more prone to have diabetes as compared to males.
+
+To check for pregnancy rates among females with and without diabetes, we summarise the female diabetes data in a table called _**Diabetes_Pregnancy**_
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+Diabetes_Pregnancy = Diabetes %>% group_by(sex,Diabetic,pregnant) %>% summarise(Count = n()) %>% filter(sex=="Female")
+Diabetes_Pregnancy = Diabetes_Pregnancy %>% filter(!is.na(pregnant))
+aggregate(Count~Diabetic,Diabetes_Pregnancy,sum)
+Diabetes_Pregnancy = Diabetes_Pregnancy %>% mutate(Pregnancy_Ratio = case_when(Diabetic=="No" ~ Count/71821, TRUE ~ Count/5161))
+Diabetes_Pregnancy
+ggplot(Diabetes_Pregnancy, aes(fill = pregnant, y=Pregnancy_Ratio, x=Diabetic))+geom_bar(stat="identity")+geom_text(aes(label=round(Pregnancy_Ratio,2)))
+```
+
+Thus, we observe that pregnancy among diabetic women is lower as compared to women who do not have diabetes.
+
+**Research quesion 3:**
+
+We want to explore the relationship between sleeping hours and poor health and then further explore this relationship across genders. For this, we firstly summarise all the required variables, gender(sex), poor health days(poorhlth) and sleep hours (sleptim1) in a table called _**Sleep_Health**_
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+Sleep_Health = brfss2013 %>% group_by(sex) %>% summarise(Mean_Poorhlth = mean(poorhlth, na.rm = TRUE), Mean_Sleep = mean(sleptim1, na.rm = TRUE)) %>% filter(!is.na(sex))
+
+
+ggplot(Sleep_Health, aes(y=Mean_Sleep, x=sex))+geom_bar(stat="identity")+geom_text(aes(label=round(Mean_Sleep,2),vjust=1.6),color="white")+labs(y="Avg. Sleep Hours")+ggtitle("Gender-wise Average Sleep Hours")+theme_minimal()
+```
+
+We see that females on an average get more sleep as compared to males. Now to compare the health for both the genders
+
+```{r}
+ggplot(Sleep_Health, aes(y=Mean_Poorhlth, x=sex))+geom_bar(stat="identity")+geom_text(aes(label=round(Mean_Poorhlth,2),vjust=1.6),color="white")+labs(y="Avg. Poor Health Days")+ggtitle("Gender-wise Average Poor Health Days")+theme_minimal()
+```
+
+Men seem to have a higher number of poor health days as compared to females.
+
+Thus, from the two graphs we can conclude that more sleep hours do infact lead to lesser number of poor health days as seen in the case of females.
+
